@@ -347,12 +347,36 @@
       align-items: center;
       gap: 6px;
     }
+    .team-chip.is-third {
+      font-weight: 700;
+      color: var(--green-dark);
+    }
+    .team-chip.is-third .flag {
+      box-shadow: 0 0 0 2px var(--red);
+    }
 
     .candidates-note {
       margin-top: 12px;
       font-size: 0.74rem;
       color: var(--muted);
       line-height: 1.5;
+    }
+
+    .likely-rival {
+      margin-top: 12px;
+      padding: 12px 14px;
+      background: var(--paper);
+      border: 1px dashed var(--green);
+      border-radius: 12px;
+      font-size: 0.78rem;
+      line-height: 1.5;
+    }
+    .likely-rival strong { color: var(--green-dark); }
+    .likely-rank {
+      margin-top: 8px;
+      font-size: 0.7rem;
+      color: var(--muted);
+      line-height: 1.6;
     }
 
     footer {
@@ -489,6 +513,7 @@
             </div>
           </div>
           <p class="candidates-note">Rival exacto por definir: será el mejor tercer lugar entre estos grupos (regla de los "8 mejores terceros"), hasta el cierre de la fase de grupos el 27 de junio.</p>
+          <div class="likely-rival" id="likelyRival"></div>
         </div>
       </div>
 
@@ -604,6 +629,27 @@
       return 'el ganador entre ' + describeSlot(ref.team1) + ' y ' + describeSlot(ref.team2);
     }
     return describeSlot(code);
+  }
+
+  function getStandings(matches, groupName) {
+    const groupMatches = matches.filter(m => m.group === groupName);
+    const teams = {};
+    const ensure = name => teams[name] || (teams[name] = { name, pj: 0, g: 0, e: 0, p: 0, gf: 0, gc: 0 });
+    groupMatches.forEach(m => { ensure(m.team1); ensure(m.team2); });
+    groupMatches.forEach(m => {
+      if (!m.score || !m.score.ft) return;
+      const [s1, s2] = m.score.ft;
+      const t1 = ensure(m.team1), t2 = ensure(m.team2);
+      t1.pj++; t2.pj++;
+      t1.gf += s1; t1.gc += s2;
+      t2.gf += s2; t2.gc += s1;
+      if (s1 > s2) { t1.g++; t2.p++; }
+      else if (s1 < s2) { t2.g++; t1.p++; }
+      else { t1.e++; t2.e++; }
+    });
+    const table = Object.values(teams).map(t => ({ ...t, dg: t.gf - t.gc, pts: t.g * 3 + t.e }));
+    table.sort((a, b) => b.pts - a.pts || b.dg - a.dg || b.gf - a.gf);
+    return table;
   }
 
   function buildGroupTable(matches) {
@@ -743,7 +789,8 @@
       } else if (isR32) {
         rivalEl.innerHTML = `Contrincante: <span class="tbd">TBD</span>
           <div class="candidates-inline" id="candidatesGrid"></div>
-          <p class="candidates-note">Rival exacto por definir: será el mejor tercer lugar entre estos grupos (regla de los "8 mejores terceros"), hasta el cierre de la fase de grupos.</p>`;
+          <p class="candidates-note">Rival exacto por definir: será el mejor tercer lugar entre estos grupos (regla de los "8 mejores terceros"), hasta el cierre de la fase de grupos.</p>
+          <div class="likely-rival" id="likelyRival"></div>`;
         refs = new Set([MEXICO, 'W' + m._num]);
       } else {
         rivalEl.innerHTML = `Rival: ${opponentLabel(oppCode, byNum)} <span class="tbd">(por jugarse)</span>`;
@@ -756,15 +803,30 @@
     const grid = document.getElementById('candidatesGrid');
     if (!grid) return;
     const groups = ['C', 'E', 'F', 'H', 'I'];
+    const thirds = [];
+
     grid.innerHTML = groups.map(letter => {
-      const groupName = 'Group ' + letter;
-      const teamSet = new Set();
-      matches.filter(m => m.group === groupName).forEach(m => { teamSet.add(m.team1); teamSet.add(m.team2); });
+      const table = getStandings(matches, 'Group ' + letter);
+      const third = table[2];
+      if (third) thirds.push({ letter, ...third });
       return `<div class="cand-group">
         <span class="cand-letter">${letter}</span>
-        ${[...teamSet].map(n => `<span class="team-chip">${flagImg(n)}${teamEs(n)}</span>`).join('') || '—'}
+        ${table.map(t => `<span class="team-chip${t.name === (third && third.name) ? ' is-third' : ''}">${flagImg(t.name)}${teamEs(t.name)}</span>`).join('') || '—'}
       </div>`;
     }).join('');
+
+    const likelyEl = document.getElementById('likelyRival');
+    if (!likelyEl) return;
+    thirds.sort((a, b) => b.pts - a.pts || b.dg - a.dg || b.gf - a.gf);
+    const leader = thirds[0];
+    if (!leader) { likelyEl.innerHTML = ''; return; }
+    const rank = thirds.map((t, i) =>
+      `${i + 1}. ${teamEs(t.name)} (Gpo. ${t.letter}, ${t.pts} pts, DG ${t.dg > 0 ? '+' + t.dg : t.dg})`
+    ).join(' &middot; ');
+    likelyEl.innerHTML = `
+      Si la fase de grupos terminara hoy: <strong>${flagImg(leader.name)}${teamEs(leader.name)}</strong>
+      (3º del Grupo ${leader.letter}, ${leader.pts} pts, DG ${leader.dg > 0 ? '+' + leader.dg : leader.dg}) sería el rival.
+      <div class="likely-rank">${rank}</div>`;
   }
 
   async function loadLiveData() {
