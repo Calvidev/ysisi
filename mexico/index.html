@@ -534,6 +534,22 @@
     'France': 'fr', 'Senegal': 'sn', 'Iraq': 'iq', 'Norway': 'no',
   };
 
+  // ── Nombres de equipo en español ──────────────
+  const TEAMS_ES = {
+    'Mexico': 'México', 'South Korea': 'Corea del Sur', 'Korea Republic': 'Corea del Sur',
+    'Czechia': 'Chequia', 'Czech Republic': 'Chequia', 'South Africa': 'Sudáfrica',
+    'Brazil': 'Brasil', 'Morocco': 'Marruecos', 'Haiti': 'Haití', 'Scotland': 'Escocia',
+    'Germany': 'Alemania', 'Curacao': 'Curazao', 'Curaçao': 'Curazao',
+    'Ivory Coast': 'Costa de Marfil', "Côte d'Ivoire": 'Costa de Marfil', 'Ecuador': 'Ecuador',
+    'Netherlands': 'Países Bajos', 'Japan': 'Japón', 'Sweden': 'Suecia', 'Tunisia': 'Túnez',
+    'Spain': 'España', 'Cape Verde': 'Cabo Verde', 'Saudi Arabia': 'Arabia Saudita', 'Uruguay': 'Uruguay',
+    'France': 'Francia', 'Senegal': 'Senegal', 'Iraq': 'Irak', 'Norway': 'Noruega',
+  };
+
+  function teamEs(name) {
+    return TEAMS_ES[name] || name;
+  }
+
   function flagImg(name, cls = 'flag') {
     const code = FLAGS[name];
     if (!code) return '';
@@ -568,7 +584,7 @@
     if (m) return (m[1] === '1' ? 'Líder' : '2º lugar') + ' del Grupo ' + m[2];
     m = /^3((?:[A-L]\/?)+)$/.exec(code);
     if (m) return 'mejor 3º (Grupos ' + m[1].split('/').join(', ') + ')';
-    return code; // ya es un equipo real
+    return teamEs(code); // ya es un equipo real
   }
 
   function opponentLabel(code, byNum) {
@@ -605,7 +621,7 @@
     const tbody = document.getElementById('groupBody');
     tbody.innerHTML = table.map(t => `
       <tr class="${t.name === MEXICO ? 'mex' : ''}">
-        <td><span class="team-name">${flagImg(t.name)}${t.name === MEXICO ? 'México' : t.name}</span></td>
+        <td><span class="team-name">${flagImg(t.name)}${teamEs(t.name)}</span></td>
         <td>${t.pj}</td><td>${t.g}</td><td>${t.e}</td><td>${t.p}</td>
         <td>${t.gf}</td><td>${t.gc}</td><td>${t.dg > 0 ? '+' + t.dg : t.dg}</td>
         <td class="pts">${t.pts}</td>
@@ -621,7 +637,7 @@
         const [s1, s2] = m.score.ft;
         const opp = m.team1 === MEXICO ? m.team2 : m.team1;
         const score = m.team1 === MEXICO ? `${s1}-${s2}` : `${s2}-${s1}`;
-        return `${score} vs. ${opp === MEXICO ? '' : opp} (${fmtDateEs(m.date)})`.replace('vs. (', '(');
+        return `${score} vs. ${opp === MEXICO ? '' : teamEs(opp)} (${fmtDateEs(m.date)})`.replace('vs. (', '(');
       });
 
     const top = table[0];
@@ -645,7 +661,7 @@
             <div class="nm-team">
               ${flagImg(away, 'flag flag-lg')}
               <div class="nm-record">${awayT.g}-${awayT.e}-${awayT.p}</div>
-              <div class="nm-name">${away === MEXICO ? 'México' : away}</div>
+              <div class="nm-name">${teamEs(away)}</div>
             </div>
             <div class="nm-center">
               <div class="nm-time">${fmtTimeCDMX(nextMex)}</div>
@@ -654,7 +670,7 @@
             <div class="nm-team">
               ${flagImg(home, 'flag flag-lg')}
               <div class="nm-record">${homeT.g}-${homeT.e}-${homeT.p}</div>
-              <div class="nm-name">${home === MEXICO ? 'México' : home}</div>
+              <div class="nm-name">${teamEs(home)}</div>
             </div>
           </div>
         </div>`;
@@ -736,7 +752,7 @@
       matches.filter(m => m.group === groupName).forEach(m => { teamSet.add(m.team1); teamSet.add(m.team2); });
       return `<div class="cand-group">
         <span class="cand-letter">${letter}</span>
-        ${[...teamSet].map(n => `<span class="team-chip">${flagImg(n)}${n}</span>`).join('') || '—'}
+        ${[...teamSet].map(n => `<span class="team-chip">${flagImg(n)}${teamEs(n)}</span>`).join('') || '—'}
       </div>`;
     }).join('');
   }
