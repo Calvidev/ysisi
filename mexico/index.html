@@ -142,6 +142,21 @@
 
     .pts { font-weight: 700; }
 
+    .flag {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.12);
+      vertical-align: middle;
+    }
+    .team-name {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     .group-note {
       margin-top: 16px;
       font-size: 0.82rem;
@@ -250,6 +265,14 @@
       font-size: 0.8rem;
       line-height: 1.5;
       font-weight: 500;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .team-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
     }
 
     .candidates-note {
@@ -301,16 +324,16 @@
       </thead>
       <tbody id="groupBody">
         <tr class="mex">
-          <td>México</td><td>2</td><td>2</td><td>0</td><td>0</td><td>3</td><td>0</td><td>+3</td><td class="pts">6</td>
+          <td><span class="team-name"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/mx.svg" alt="">México</span></td><td>2</td><td>2</td><td>0</td><td>0</td><td>3</td><td>0</td><td>+3</td><td class="pts">6</td>
         </tr>
         <tr>
-          <td>Corea del Sur</td><td>2</td><td>1</td><td>0</td><td>1</td><td>2</td><td>2</td><td>0</td><td class="pts">3</td>
+          <td><span class="team-name"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/kr.svg" alt="">Corea del Sur</span></td><td>2</td><td>1</td><td>0</td><td>1</td><td>2</td><td>2</td><td>0</td><td class="pts">3</td>
         </tr>
         <tr>
-          <td>Chequia</td><td>2</td><td>0</td><td>1</td><td>1</td><td>2</td><td>3</td><td>-1</td><td class="pts">1</td>
+          <td><span class="team-name"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/cz.svg" alt="">Chequia</span></td><td>2</td><td>0</td><td>1</td><td>1</td><td>2</td><td>3</td><td>-1</td><td class="pts">1</td>
         </tr>
         <tr>
-          <td>Sudáfrica</td><td>2</td><td>0</td><td>1</td><td>1</td><td>1</td><td>3</td><td>-2</td><td class="pts">1</td>
+          <td><span class="team-name"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/za.svg" alt="">Sudáfrica</span></td><td>2</td><td>0</td><td>1</td><td>1</td><td>1</td><td>3</td><td>-2</td><td class="pts">1</td>
         </tr>
       </tbody>
     </table>
@@ -372,23 +395,48 @@
     <div class="candidates" id="candidatesGrid">
       <div class="candidate-group">
         <div class="g-label">Grupo C</div>
-        <div class="g-teams">Brasil, Marruecos, Haití, Escocia</div>
+        <div class="g-teams">
+          <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/br.svg" alt="">Brasil</span>
+          <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/ma.svg" alt="">Marruecos</span>
+          <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/ht.svg" alt="">Haití</span>
+          <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/gb-sct.svg" alt="">Escocia</span>
+        </div>
       </div>
       <div class="candidate-group">
         <div class="g-label">Grupo E</div>
-        <div class="g-teams">Alemania, Curazao, Costa de Marfil, Ecuador</div>
+        <div class="g-teams">
+          <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/de.svg" alt="">Alemania</span>
+          <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/cw.svg" alt="">Curazao</span>
+          <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/ci.svg" alt="">Costa de Marfil</span>
+          <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/ec.svg" alt="">Ecuador</span>
+        </div>
       </div>
       <div class="candidate-group">
         <div class="g-label">Grupo F</div>
-        <div class="g-teams">Países Bajos, Japón, Suecia, Túnez</div>
+        <div class="g-teams">
+          <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/nl.svg" alt="">Países Bajos</span>
+          <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/jp.svg" alt="">Japón</span>
+          <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/se.svg" alt="">Suecia</span>
+          <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/tn.svg" alt="">Túnez</span>
+        </div>
       </div>
       <div class="candidate-group">
         <div class="g-label">Grupo H</div>
-        <div class="g-teams">España, Cabo Verde, Arabia Saudita, Uruguay</div>
+        <div class="g-teams">
+          <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/es.svg" alt="">España</span>
+          <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/cv.svg" alt="">Cabo Verde</span>
+          <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/sa.svg" alt="">Arabia Saudita</span>
+          <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/uy.svg" alt="">Uruguay</span>
+        </div>
       </div>
       <div class="candidate-group">
         <div class="g-label">Grupo I</div>
-        <div class="g-teams">Francia, Senegal, Irak, Noruega</div>
+        <div class="g-teams">
+          <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/fr.svg" alt="">Francia</span>
+          <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/sn.svg" alt="">Senegal</span>
+          <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/iq.svg" alt="">Irak</span>
+          <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/no.svg" alt="">Noruega</span>
+        </div>
       </div>
     </div>
     <p class="candidates-note">
@@ -411,6 +459,23 @@
   const GROUP = 'Group A';
 
   const MONTHS_ES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+  // ── Banderas circulares (circle-flags, gratis, sin API key) ──
+  // https://github.com/HatScripts/circle-flags
+  const FLAGS = {
+    'Mexico': 'mx', 'South Korea': 'kr', 'Korea Republic': 'kr', 'Czechia': 'cz', 'Czech Republic': 'cz', 'South Africa': 'za',
+    'Brazil': 'br', 'Morocco': 'ma', 'Haiti': 'ht', 'Scotland': 'gb-sct',
+    'Germany': 'de', 'Curacao': 'cw', 'Curaçao': 'cw', 'Ivory Coast': 'ci', "Côte d'Ivoire": 'ci', 'Ecuador': 'ec',
+    'Netherlands': 'nl', 'Japan': 'jp', 'Sweden': 'se', 'Tunisia': 'tn',
+    'Spain': 'es', 'Cape Verde': 'cv', 'Saudi Arabia': 'sa', 'Uruguay': 'uy',
+    'France': 'fr', 'Senegal': 'sn', 'Iraq': 'iq', 'Norway': 'no',
+  };
+
+  function flagImg(name) {
+    const code = FLAGS[name];
+    if (!code) return '';
+    return `<img class="flag" src="https://hatscripts.github.io/circle-flags/flags/${code}.svg" alt="" loading="lazy" onerror="this.remove()">`;
+  }
 
   function fmtDateEs(iso) {
     const [y, m, d] = iso.split('-').map(Number);
@@ -467,7 +532,7 @@
     const tbody = document.getElementById('groupBody');
     tbody.innerHTML = table.map(t => `
       <tr class="${t.name === MEXICO ? 'mex' : ''}">
-        <td>${t.name === MEXICO ? 'México' : t.name}</td>
+        <td><span class="team-name">${flagImg(t.name)}${t.name === MEXICO ? 'México' : t.name}</span></td>
         <td>${t.pj}</td><td>${t.g}</td><td>${t.e}</td><td>${t.p}</td>
         <td>${t.gf}</td><td>${t.gc}</td><td>${t.dg > 0 ? '+' + t.dg : t.dg}</td>
         <td class="pts">${t.pts}</td>
@@ -563,7 +628,7 @@
       matches.filter(m => m.group === groupName).forEach(m => { teamSet.add(m.team1); teamSet.add(m.team2); });
       return `<div class="candidate-group">
         <div class="g-label">Grupo ${letter}</div>
-        <div class="g-teams">${[...teamSet].join(', ') || '—'}</div>
+        <div class="g-teams">${[...teamSet].map(n => `<span class="team-chip">${flagImg(n)}${n}</span>`).join('') || '—'}</div>
       </div>`;
     }).join('');
   }
