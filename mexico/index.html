@@ -104,12 +104,16 @@
     section { margin-bottom: 44px; }
 
     /* ── Grupo A table (scoreboard) ───────────── */
+    .table-wrap {
+      border-radius: 16px;
+      box-shadow: 0 6px 18px rgba(0,67,46,0.12);
+      overflow: hidden;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
       font-size: 0.8rem;
       background: var(--white);
-      box-shadow: 0 1px 0 var(--line);
     }
 
     thead th {
@@ -172,6 +176,8 @@
       border-left: 4px solid var(--red);
       font-size: 0.78rem;
       font-weight: 600;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,67,46,0.18);
     }
 
     /* ── Próximo partido (marcador) ───────────── */
@@ -265,6 +271,8 @@
       background: var(--white);
       padding: 14px 16px 14px 0;
       margin-bottom: 10px;
+      border-radius: 14px;
+      box-shadow: 0 6px 18px rgba(16,24,20,0.08);
     }
     .step:last-child { margin-bottom: 0; }
 
@@ -380,6 +388,7 @@
 
   <section>
     <p class="section-label">Grupo A</p>
+    <div class="table-wrap">
     <table>
       <thead>
         <tr>
@@ -401,6 +410,7 @@
         </tr>
       </tbody>
     </table>
+    </div>
     <div class="group-note" id="groupNote">
       México venció 2-0 a Sudáfrica (11 jun) y 1-0 a Corea del Sur (18 jun), asegurando matemáticamente el primer lugar del grupo.
       Corea del Sur venció 2-1 a Chequia en la J1; Chequia y Sudáfrica empataron 1-1 en la J2.
