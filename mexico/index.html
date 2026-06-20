@@ -18,7 +18,6 @@
       --paper:      #F4F6F4;
       --line:       #D9DED9;
       --muted:      #6B7670;
-      --navy:       #10193B;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -178,10 +177,12 @@
     /* ── Próximo partido (marcador) ───────────── */
     .next-match {
       margin-top: 14px;
-      background: var(--navy);
+      background: var(--green-dark);
       color: var(--white);
       padding: 18px 14px 20px;
       text-align: center;
+      border-radius: 16px;
+      box-shadow: 0 6px 18px rgba(0,67,46,0.25);
     }
     .nm-header {
       font-size: 0.66rem;
