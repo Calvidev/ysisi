@@ -837,11 +837,11 @@
     const leader = thirds[0];
     if (!leader) { likelyEl.innerHTML = ''; return; }
     const rank = thirds.map((t, i) =>
-      `${i + 1}. ${teamAbbr(t.name)} (Gpo. ${t.letter}, ${t.pts} pts, DG ${t.dg > 0 ? '+' + t.dg : t.dg})`
+      `${i + 1}. ${teamAbbr(t.name)} (Gpo. ${t.letter}, ${t.pts} pts, DG ${t.dg > 0 ? '+' + t.dg : t.dg}, GF ${t.gf})`
     ).join(' &middot; ');
     likelyEl.innerHTML = `
       Si la fase de grupos terminara hoy: <strong>${flagImg(leader.name)}${teamAbbr(leader.name)}</strong>
-      (3º del Grupo ${leader.letter}, ${leader.pts} pts, DG ${leader.dg > 0 ? '+' + leader.dg : leader.dg}) sería el rival.
+      (3º del Grupo ${leader.letter}, ${leader.pts} pts, DG ${leader.dg > 0 ? '+' + leader.dg : leader.dg}, GF ${leader.gf}) sería el rival.
       <div class="likely-rank">${rank}</div>`;
   }
 
