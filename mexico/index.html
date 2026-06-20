@@ -377,6 +377,35 @@
       font-size: 0.7rem;
       color: var(--muted);
       line-height: 1.6;
+      flex-basis: 100%;
+    }
+
+    .slot-preview {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 7px;
+      font-size: 0.76rem;
+      padding: 8px 10px;
+      background: var(--paper);
+      border-radius: 10px;
+    }
+    .slot-tag {
+      font-family: 'Oswald', sans-serif;
+      font-weight: 700;
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+    .team-chip.is-lead {
+      font-weight: 700;
+      color: var(--green-dark);
+    }
+    .slot-stats {
+      font-size: 0.68rem;
+      color: var(--muted);
     }
 
     footer {
@@ -567,6 +596,7 @@
     'Netherlands': 'nl', 'Japan': 'jp', 'Sweden': 'se', 'Tunisia': 'tn',
     'Spain': 'es', 'Cape Verde': 'cv', 'Saudi Arabia': 'sa', 'Uruguay': 'uy',
     'France': 'fr', 'Senegal': 'sn', 'Iraq': 'iq', 'Norway': 'no',
+    'England': 'gb-eng', 'Ghana': 'gh', 'Panama': 'pa', 'Croatia': 'hr', 'Jordan': 'jo', 'DR Congo': 'cd',
   };
 
   // ── Nombres de equipo en español ──────────────
@@ -579,6 +609,8 @@
     'Netherlands': 'Países Bajos', 'Japan': 'Japón', 'Sweden': 'Suecia', 'Tunisia': 'Túnez',
     'Spain': 'España', 'Cape Verde': 'Cabo Verde', 'Saudi Arabia': 'Arabia Saudita', 'Uruguay': 'Uruguay',
     'France': 'Francia', 'Senegal': 'Senegal', 'Iraq': 'Irak', 'Norway': 'Noruega',
+    'England': 'Inglaterra', 'Ghana': 'Ghana', 'Panama': 'Panamá', 'Croatia': 'Croacia',
+    'Jordan': 'Jordania', 'DR Congo': 'RD Congo',
   };
 
   function teamEs(name) {
@@ -645,6 +677,43 @@
       return 'el ganador entre ' + describeSlot(ref.team1) + ' y ' + describeSlot(ref.team2);
     }
     return describeSlot(code);
+  }
+
+  // ── Vista previa del candidato actual para un slot (1X, 2X, 3X/Y/Z) ──
+  function slotPreview(matches, code) {
+    let m = /^([12])([A-L])$/.exec(code || '');
+    if (m) {
+      const table = getStandings(matches, 'Group ' + m[2]);
+      const t = table[m[1] === '1' ? 0 : 1];
+      if (!t) return '';
+      const label = m[1] === '1' ? 'Líder actual' : '2º actual';
+      return `<div class="slot-preview">
+        <span class="slot-tag">${label} Gpo. ${m[2]}</span>
+        <span class="team-chip is-lead">${flagImg(t.name)}${teamEs(t.name)}</span>
+        <span class="slot-stats">${t.pts} pts &middot; DG ${t.dg > 0 ? '+' + t.dg : t.dg} &middot; GF ${t.gf}</span>
+      </div>`;
+    }
+    m = /^3((?:[A-L]\/?)+)$/.exec(code || '');
+    if (m) {
+      const letters = m[1].split('/');
+      const thirds = letters.map(letter => {
+        const t = getStandings(matches, 'Group ' + letter)[2];
+        return t ? { letter, ...t } : null;
+      }).filter(Boolean);
+      thirds.sort((a, b) => b.pts - a.pts || b.dg - a.dg || b.gf - a.gf);
+      const leader = thirds[0];
+      if (!leader) return '';
+      const rank = thirds.map((t, i) =>
+        `${i + 1}. ${teamEs(t.name)} (Gpo. ${t.letter}, ${t.pts} pts, DG ${t.dg > 0 ? '+' + t.dg : t.dg}, GF ${t.gf})`
+      ).join(' &middot; ');
+      return `<div class="slot-preview">
+        <span class="slot-tag">Mejor 3º actual (Gpos. ${letters.join(', ')})</span>
+        <span class="team-chip is-lead">${flagImg(leader.name)}${teamEs(leader.name)}</span>
+        <span class="slot-stats">${leader.pts} pts &middot; DG ${leader.dg > 0 ? '+' + leader.dg : leader.dg} &middot; GF ${leader.gf}</span>
+        <div class="likely-rank">${rank}</div>
+      </div>`;
+    }
+    return '';
   }
 
   function getStandings(matches, groupName) {
@@ -809,7 +878,14 @@
           <div class="likely-rival" id="likelyRival"></div>`;
         refs = new Set([MEXICO, 'W' + m._num]);
       } else {
-        rivalEl.innerHTML = `Rival: ${opponentLabel(oppCode, byNum)} <span class="tbd">(por jugarse)</span>`;
+        const wm = /^W(\d+)$/.exec(oppCode || '');
+        let preview = '';
+        if (wm && byNum[wm[1]]) {
+          const ref = byNum[wm[1]];
+          preview = slotPreview(matches, ref.team1) + slotPreview(matches, ref.team2);
+        }
+        rivalEl.innerHTML = `Rival: ${opponentLabel(oppCode, byNum)} <span class="tbd">(por jugarse)</span>`
+          + (preview ? `<div class="candidates-inline">${preview}</div>` : '');
         refs = new Set([MEXICO, 'W' + m._num]);
       }
     });
