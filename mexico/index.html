@@ -18,6 +18,7 @@
       --paper:      #F4F6F4;
       --line:       #D9DED9;
       --muted:      #6B7670;
+      --navy:       #10193B;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -172,6 +173,76 @@
       border-left: 4px solid var(--red);
       font-size: 0.78rem;
       font-weight: 600;
+    }
+
+    /* ── Próximo partido (marcador) ───────────── */
+    .next-match {
+      margin-top: 14px;
+      background: var(--navy);
+      color: var(--white);
+      padding: 18px 14px 20px;
+      text-align: center;
+    }
+    .nm-header {
+      font-size: 0.66rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .nm-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .nm-team {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 7px;
+      flex: 1;
+      min-width: 0;
+    }
+    .nm-team .flag-lg {
+      width: 50px;
+      height: 50px;
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.15);
+    }
+    .nm-record {
+      font-family: 'Oswald', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--white);
+    }
+    .nm-name {
+      font-family: 'Oswald', sans-serif;
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+    .nm-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 7px;
+      padding: 0 8px;
+      flex-shrink: 0;
+    }
+    .nm-time {
+      font-family: 'Oswald', sans-serif;
+      font-weight: 700;
+      font-size: 1.7rem;
+      letter-spacing: 0.02em;
+    }
+    .nm-sub {
+      font-size: 0.64rem;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.02em;
+      max-width: 140px;
+      line-height: 1.4;
     }
 
     /* ── Camino a la final ──────────────────── */
@@ -329,11 +400,29 @@
         </tr>
       </tbody>
     </table>
-    <p class="group-note" id="groupNote">
+    <div class="group-note" id="groupNote">
       México venció 2-0 a Sudáfrica (11 jun) y 1-0 a Corea del Sur (18 jun), asegurando matemáticamente el primer lugar del grupo.
       Corea del Sur venció 2-1 a Chequia en la J1; Chequia y Sudáfrica empataron 1-1 en la J2.
-      <span class="next">Próximo partido (J3): México vs. Chequia · miércoles 24 de junio · Estadio Azteca, CDMX</span>
-    </p>
+      <div class="next-match">
+        <div class="nm-header">Fase de grupos &middot; Partido 3</div>
+        <div class="nm-row">
+          <div class="nm-team">
+            <img class="flag flag-lg" src="https://hatscripts.github.io/circle-flags/flags/cz.svg" alt="">
+            <div class="nm-record">0-1-1</div>
+            <div class="nm-name">Chequia</div>
+          </div>
+          <div class="nm-center">
+            <div class="nm-time">19:00</div>
+            <div class="nm-sub">24 de junio &middot; Estadio Azteca, CDMX</div>
+          </div>
+          <div class="nm-team">
+            <img class="flag flag-lg" src="https://hatscripts.github.io/circle-flags/flags/mx.svg" alt="">
+            <div class="nm-record">2-0-0</div>
+            <div class="nm-name">México</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 
   <section>
@@ -444,10 +533,10 @@
     'France': 'fr', 'Senegal': 'sn', 'Iraq': 'iq', 'Norway': 'no',
   };
 
-  function flagImg(name) {
+  function flagImg(name, cls = 'flag') {
     const code = FLAGS[name];
     if (!code) return '';
-    return `<img class="flag" src="https://hatscripts.github.io/circle-flags/flags/${code}.svg" alt="" loading="lazy" onerror="this.remove()">`;
+    return `<img class="${cls}" src="https://hatscripts.github.io/circle-flags/flags/${code}.svg" alt="" loading="lazy" onerror="this.remove()">`;
   }
 
   function fmtDateEs(iso) {
@@ -466,6 +555,10 @@
     const dt = parseKickoffUTC(m);
     const time = dt.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'America/Mexico_City' });
     return `${fmtDateEs(m.date)} &middot; ${time} hrs (CDMX) &middot; ${m.ground}`;
+  }
+
+  function fmtTimeCDMX(m) {
+    return parseKickoffUTC(m).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'America/Mexico_City' });
   }
 
   function describeSlot(code) {
@@ -539,8 +632,31 @@
 
     const nextMex = pending.find(m => m.team1 === MEXICO || m.team2 === MEXICO);
     if (nextMex) {
-      const opp = nextMex.team1 === MEXICO ? nextMex.team2 : nextMex.team1;
-      html += `<span class="next">Próximo partido: México vs. ${opp} · ${fmtDateEs(nextMex.date)} · ${nextMex.ground}</span>`;
+      const matchday = played.filter(m => m.team1 === MEXICO || m.team2 === MEXICO).length + 1;
+      const home = nextMex.team1 === MEXICO ? nextMex.team1 : nextMex.team2;
+      const away = nextMex.team1 === MEXICO ? nextMex.team2 : nextMex.team1;
+      const homeT = table.find(t => t.name === home) || { g: 0, e: 0, p: 0 };
+      const awayT = table.find(t => t.name === away) || { g: 0, e: 0, p: 0 };
+      html += `
+        <div class="next-match">
+          <div class="nm-header">Fase de grupos &middot; Partido ${matchday}</div>
+          <div class="nm-row">
+            <div class="nm-team">
+              ${flagImg(away, 'flag flag-lg')}
+              <div class="nm-record">${awayT.g}-${awayT.e}-${awayT.p}</div>
+              <div class="nm-name">${away === MEXICO ? 'México' : away}</div>
+            </div>
+            <div class="nm-center">
+              <div class="nm-time">${fmtTimeCDMX(nextMex)}</div>
+              <div class="nm-sub">${fmtDateEs(nextMex.date)} &middot; ${nextMex.ground}</div>
+            </div>
+            <div class="nm-team">
+              ${flagImg(home, 'flag flag-lg')}
+              <div class="nm-record">${homeT.g}-${homeT.e}-${homeT.p}</div>
+              <div class="nm-name">${home === MEXICO ? 'México' : home}</div>
+            </div>
+          </div>
+        </div>`;
     } else if (pending.length === 0) {
       html += `<span class="next">Fase de grupos completa.</span>`;
     }
