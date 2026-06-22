@@ -695,21 +695,17 @@
     }
     m = /^3((?:[A-L]\/?)+)$/.exec(code || '');
     if (m) {
-      const letters = m[1].split('/');
-      const thirds = letters.map(letter => {
-        const t = getStandings(matches, 'Group ' + letter)[2];
-        return t ? { letter, ...t } : null;
-      }).filter(Boolean);
-      thirds.sort((a, b) => b.pts - a.pts || b.dg - a.dg || b.gf - a.gf);
-      const leader = thirds[0];
-      if (!leader) return '';
-      const rank = thirds.map((t, i) =>
-        `${i + 1}. ${teamEs(t.name)} (Gpo. ${t.letter}, ${t.pts} pts, DG ${t.dg > 0 ? '+' + t.dg : t.dg}, GF ${t.gf})`
-      ).join(' &middot; ');
+      const key = m[1];
+      const letters = key.split('/');
+      const resolved = resolveBestThirds(matches);
+      const winner = resolved.assigned[key];
+      if (!winner) return '';
+      const pool = resolved.thirds.filter(t => letters.includes(t.letter));
+      const rank = thirdsRankLine(pool, key, resolved, false);
       return `<div class="slot-preview">
         <span class="slot-tag">Mejor 3º actual (Gpos. ${letters.join(', ')})</span>
-        <span class="team-chip is-lead">${flagImg(leader.name)}${teamEs(leader.name)}</span>
-        <span class="slot-stats">${leader.pts} pts &middot; DG ${leader.dg > 0 ? '+' + leader.dg : leader.dg} &middot; GF ${leader.gf}</span>
+        <span class="team-chip is-lead">${flagImg(winner.name)}${teamEs(winner.name)}</span>
+        <span class="slot-stats">${winner.pts} pts &middot; DG ${winner.dg > 0 ? '+' + winner.dg : winner.dg} &middot; GF ${winner.gf}</span>
         <div class="likely-rank">${rank}</div>
       </div>`;
     }
@@ -735,6 +731,48 @@
     const table = Object.values(teams).map(t => ({ ...t, dg: t.gf - t.gc, pts: t.g * 3 + t.e }));
     table.sort((a, b) => b.pts - a.pts || b.dg - a.dg || b.gf - a.gf);
     return table;
+  }
+
+  // ── Regla real de los "8 mejores terceros" (Anexo C, reglamento FIFA) ──
+  // Los 8 partidos de dieciseisavos reservados a 3os de grupo tienen cada
+  // uno una lista fija de 5 grupos candidatos. No gana "el mejor de la
+  // lista": se resuelven en orden de número de partido, y cada partido se
+  // queda con el mejor 3º (entre los 8 que sí clasifican globalmente) que
+  // aún no haya sido tomado por un partido anterior en ese orden.
+  const THIRD_PLACE_SLOTS = [
+    'A/B/C/D/F', 'C/D/F/G/H', 'C/E/F/H/I', 'E/H/I/J/K',
+    'B/E/F/I/J', 'A/E/H/I/J', 'E/F/G/I/J', 'D/E/I/J/L',
+  ];
+
+  function resolveBestThirds(matches) {
+    const thirds = 'ABCDEFGHIJKL'.split('').map(letter => {
+      const t = getStandings(matches, 'Group ' + letter)[2];
+      return t ? { letter, ...t } : null;
+    }).filter(Boolean);
+    thirds.sort((a, b) => b.pts - a.pts || b.dg - a.dg || b.gf - a.gf);
+    thirds.forEach((t, i) => { t.globalRank = i + 1; });
+    const qualified = new Set(thirds.slice(0, 8).map(t => t.letter));
+    const used = new Set();
+    const assigned = {};
+    const slotOf = {};
+    THIRD_PLACE_SLOTS.forEach(key => {
+      const groups = key.split('/');
+      const pick = thirds.find(t => qualified.has(t.letter) && !used.has(t.letter) && groups.includes(t.letter));
+      assigned[key] = pick || null;
+      if (pick) { used.add(pick.letter); slotOf[pick.letter] = key; }
+    });
+    return { thirds, qualified, assigned, slotOf };
+  }
+
+  function thirdsRankLine(pool, key, resolved, abbr) {
+    const { qualified, slotOf } = resolved;
+    return pool.map(t => {
+      const name = abbr ? teamAbbr(t.name) : teamEs(t.name);
+      let note = '';
+      if (!qualified.has(t.letter)) note = ' — no entra al top 8';
+      else if (slotOf[t.letter] !== key) note = ' — ya asignado a otro partido';
+      return `${t.globalRank}. ${name} (Gpo. ${t.letter}, ${t.pts} pts, DG ${t.dg > 0 ? '+' + t.dg : t.dg}, GF ${t.gf})${note}`;
+    }).join(' &middot; ');
   }
 
   function buildGroupTable(matches) {
@@ -895,12 +933,11 @@
     const grid = document.getElementById('candidatesGrid');
     if (!grid) return;
     const groups = ['C', 'E', 'F', 'H', 'I'];
-    const thirds = [];
+    const key = groups.join('/');
 
     grid.innerHTML = groups.map(letter => {
       const table = getStandings(matches, 'Group ' + letter);
       const third = table[2];
-      if (third) thirds.push({ letter, ...third });
       return `<div class="cand-group">
         <span class="cand-letter">${letter}</span>
         ${table.map(t => `<span class="team-chip${t.name === (third && third.name) ? ' is-third' : ''}">${flagImg(t.name)}${teamAbbr(t.name)}</span>`).join('') || '—'}
@@ -909,15 +946,15 @@
 
     const likelyEl = document.getElementById('likelyRival');
     if (!likelyEl) return;
-    thirds.sort((a, b) => b.pts - a.pts || b.dg - a.dg || b.gf - a.gf);
-    const leader = thirds[0];
-    if (!leader) { likelyEl.innerHTML = ''; return; }
-    const rank = thirds.map((t, i) =>
-      `${i + 1}. ${teamAbbr(t.name)} (Gpo. ${t.letter}, ${t.pts} pts, DG ${t.dg > 0 ? '+' + t.dg : t.dg}, GF ${t.gf})`
-    ).join(' &middot; ');
+    const resolved = resolveBestThirds(matches);
+    const winner = resolved.assigned[key];
+    if (!winner) { likelyEl.innerHTML = ''; return; }
+    const pool = resolved.thirds.filter(t => groups.includes(t.letter));
+    const rank = thirdsRankLine(pool, key, resolved, true);
     likelyEl.innerHTML = `
-      Si la fase de grupos terminara hoy: <strong>${flagImg(leader.name)}${teamAbbr(leader.name)}</strong>
-      (3º del Grupo ${leader.letter}, ${leader.pts} pts, DG ${leader.dg > 0 ? '+' + leader.dg : leader.dg}, GF ${leader.gf}) sería el rival.
+      Si la fase de grupos terminara hoy: <strong>${flagImg(winner.name)}${teamAbbr(winner.name)}</strong>
+      (3º del Grupo ${winner.letter}, ${winner.pts} pts, DG ${winner.dg > 0 ? '+' + winner.dg : winner.dg}, GF ${winner.gf}) sería el rival,
+      según el orden de partidos de la regla de los "8 mejores terceros".
       <div class="likely-rank">${rank}</div>`;
   }
 
