@@ -217,6 +217,20 @@
       height: 50px;
       box-shadow: 0 0 0 2px rgba(255,255,255,0.15);
     }
+    .flag-tbd {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 2px dashed rgba(255,255,255,0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Oswald', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.45);
+    }
+    .nm-tbd .nm-name { color: rgba(255,255,255,0.55); font-style: italic; }
     .nm-record {
       font-family: 'Oswald', sans-serif;
       font-weight: 600;
@@ -464,20 +478,20 @@
       México venció 2-0 a Sudáfrica (11 jun) y 1-0 a Corea del Sur (18 jun), asegurando matemáticamente el primer lugar del grupo.
       Corea del Sur venció 2-1 a Chequia en la J1; Chequia y Sudáfrica empataron 1-1 en la J2.
       <div class="next-match">
-        <div class="nm-header">Fase de grupos &middot; Partido 3</div>
+        <div class="nm-header">Dieciseisavos de final</div>
         <div class="nm-row">
-          <div class="nm-team">
-            <img class="flag flag-lg" src="https://hatscripts.github.io/circle-flags/flags/cz.svg" alt="">
-            <div class="nm-record">0-1-1</div>
-            <div class="nm-name">Chequia</div>
+          <div class="nm-team nm-tbd">
+            <div class="flag-tbd">?</div>
+            <div class="nm-record">&nbsp;</div>
+            <div class="nm-name">Por confirmar</div>
           </div>
           <div class="nm-center">
             <div class="nm-time">19:00</div>
-            <div class="nm-sub">24 de junio &middot; Estadio Azteca, CDMX</div>
+            <div class="nm-sub">30 de junio &middot; Estadio Azteca, CDMX</div>
           </div>
           <div class="nm-team">
             <img class="flag flag-lg" src="https://hatscripts.github.io/circle-flags/flags/mx.svg" alt="">
-            <div class="nm-record">2-0-0</div>
+            <div class="nm-record">2-0-1</div>
             <div class="nm-name">México</div>
           </div>
         </div>
@@ -700,6 +714,21 @@
     }
     return '';
   }
+
+  // ── ¿Sigue siendo un slot sin resolver (1A, 2A, 3C/E/F/H/I) o ya es un equipo real? ──
+  function isPlaceholderCode(code) {
+    return /^[12][A-L]$/.test(code || '') || /^3(?:[A-L]\/?)+$/.test(code || '');
+  }
+
+  function findTeamGroup(matches, name) {
+    const m = matches.find(mm => mm.group && (mm.team1 === name || mm.team2 === name));
+    return m ? m.group : null;
+  }
+
+  const ROUND_ES = {
+    'Round of 32': 'Dieciseisavos de final', 'Round of 16': 'Octavos de final',
+    'Quarter-final': 'Cuartos de final', 'Semi-final': 'Semifinal', 'Final': 'Final',
+  };
 
   function getStandings(matches, groupName) {
     const groupMatches = matches.filter(m => m.group === groupName);
@@ -1326,35 +1355,61 @@
           : `México va en el ${table.findIndex(t => t.name === MEXICO) + 1}º lugar del Grupo A con ${teams[MEXICO] ? ensure(MEXICO).pts : 0} pts.`)
       : 'Cargando standings del Grupo A…';
 
-    const nextMex = pending.find(m => m.team1 === MEXICO || m.team2 === MEXICO);
+    // Próximo partido real de México (fase de grupos o, si ya terminó, la siguiente
+    // ronda de eliminación directa) — se mantiene como TBD hasta que el feed resuelva
+    // el código de slot (1A, 2A, 3C/E/F/H/I…) al nombre real del rival.
+    const nextMex = matches
+      .filter(m => (!m.score || !m.score.ft) && (m.team1 === MEXICO || m.team2 === MEXICO))
+      .sort((a, b) => parseKickoffUTC(a) - parseKickoffUTC(b))[0];
+
     if (nextMex) {
-      const matchday = played.filter(m => m.team1 === MEXICO || m.team2 === MEXICO).length + 1;
-      const home = nextMex.team1 === MEXICO ? nextMex.team1 : nextMex.team2;
-      const away = nextMex.team1 === MEXICO ? nextMex.team2 : nextMex.team1;
-      const homeT = table.find(t => t.name === home) || { g: 0, e: 0, p: 0 };
-      const awayT = table.find(t => t.name === away) || { g: 0, e: 0, p: 0 };
+      const isGroupStage = nextMex.group === GROUP;
+      const mexT = table.find(t => t.name === MEXICO) || { g: 0, e: 0, p: 0 };
+      const oppCode = nextMex.team1 === MEXICO ? nextMex.team2 : nextMex.team1;
+      const placeholder = isPlaceholderCode(oppCode);
+
+      const mexHtml = `<div class="nm-team">
+        ${flagImg(MEXICO, 'flag flag-lg')}
+        <div class="nm-record">${mexT.g}-${mexT.e}-${mexT.p}</div>
+        <div class="nm-name">México</div>
+      </div>`;
+
+      let oppHtml;
+      if (placeholder) {
+        oppHtml = `<div class="nm-team nm-tbd">
+          <div class="flag-tbd">?</div>
+          <div class="nm-record">&nbsp;</div>
+          <div class="nm-name">Por confirmar</div>
+        </div>`;
+      } else {
+        const oppGroup = nextMex.group || findTeamGroup(matches, oppCode);
+        const oppTable = oppGroup ? getStandings(matches, oppGroup) : [];
+        const oppT = oppTable.find(t => t.name === oppCode) || { g: 0, e: 0, p: 0 };
+        oppHtml = `<div class="nm-team">
+          ${flagImg(oppCode, 'flag flag-lg')}
+          <div class="nm-record">${oppT.g}-${oppT.e}-${oppT.p}</div>
+          <div class="nm-name">${teamEs(oppCode)}</div>
+        </div>`;
+      }
+
+      const header = isGroupStage
+        ? `Fase de grupos &middot; Partido ${played.filter(m => m.team1 === MEXICO || m.team2 === MEXICO).length + 1}`
+        : (ROUND_ES[nextMex.round] || nextMex.round);
+
       html += `
         <div class="next-match">
-          <div class="nm-header">Fase de grupos &middot; Partido ${matchday}</div>
+          <div class="nm-header">${header}</div>
           <div class="nm-row">
-            <div class="nm-team">
-              ${flagImg(away, 'flag flag-lg')}
-              <div class="nm-record">${awayT.g}-${awayT.e}-${awayT.p}</div>
-              <div class="nm-name">${teamEs(away)}</div>
-            </div>
+            ${oppHtml}
             <div class="nm-center">
               <div class="nm-time">${fmtTimeCDMX(nextMex)}</div>
               <div class="nm-sub">${fmtDateEs(nextMex.date)} &middot; ${nextMex.ground}</div>
             </div>
-            <div class="nm-team">
-              ${flagImg(home, 'flag flag-lg')}
-              <div class="nm-record">${homeT.g}-${homeT.e}-${homeT.p}</div>
-              <div class="nm-name">${teamEs(home)}</div>
-            </div>
+            ${mexHtml}
           </div>
         </div>`;
-    } else if (pending.length === 0) {
-      html += `<span class="next">Fase de grupos completa.</span>`;
+    } else {
+      html += `<span class="next">No hay más partidos programados.</span>`;
     }
     document.getElementById('groupNote').innerHTML = html;
 
