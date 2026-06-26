@@ -327,33 +327,29 @@
       flex-direction: column;
       gap: 7px;
     }
-    .cand-group {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 7px;
-      font-size: 0.76rem;
-    }
-    .cand-letter {
-      font-family: 'Oswald', sans-serif;
-      font-weight: 700;
-      font-size: 0.7rem;
-      color: var(--red);
-      width: 16px;
-      flex-shrink: 0;
-    }
     .team-chip {
       display: inline-flex;
       align-items: center;
       gap: 6px;
     }
-    .team-chip.is-third {
+
+    .thirds-table-wrap {
+      margin-top: 10px;
+      border-radius: 12px;
+      box-shadow: 0 4px 14px rgba(0,67,46,0.1);
+      overflow: hidden;
+    }
+    .thirds-table-wrap table { font-size: 0.7rem; }
+    .thirds-table-wrap thead th { font-size: 0.55rem; padding: 7px 3px; }
+    .thirds-table-wrap tbody td { padding: 7px 3px; }
+    .thirds-table-wrap .grp {
+      font-family: 'Oswald', sans-serif;
       font-weight: 700;
-      color: var(--green-dark);
+      color: var(--red);
     }
-    .team-chip.is-third .flag {
-      box-shadow: 0 0 0 2px var(--red);
-    }
+    .thirds-table-wrap tr.our-rival td { color: var(--white); background: var(--green); }
+    .thirds-table-wrap tr.our-rival td:first-child { border-left: 4px solid var(--red); padding-left: 8px; }
+    .thirds-table-wrap tr.is-candidate td:first-child { color: var(--green-dark); font-weight: 700; }
 
     .candidates-note {
       margin-top: 12px;
@@ -504,44 +500,21 @@
         <div class="step-meta" id="meta-r32">Martes 30 de junio &middot; 20:00 hrs (CDMX) &middot; Estadio Azteca, CDMX</div>
         <div class="step-rival" id="rival-r32">
           Contrincante: <span class="tbd">TBD</span>
-          <div class="candidates-inline" id="candidatesGrid">
-            <div class="cand-group">
-              <span class="cand-letter">C</span>
-              <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/br.svg" alt="">BRA</span>
-              <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/ma.svg" alt="">MAR</span>
-              <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/ht.svg" alt="">HAI</span>
-              <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/gb-sct.svg" alt="">SCO</span>
-            </div>
-            <div class="cand-group">
-              <span class="cand-letter">E</span>
-              <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/de.svg" alt="">GER</span>
-              <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/cw.svg" alt="">CUW</span>
-              <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/ci.svg" alt="">CIV</span>
-              <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/ec.svg" alt="">ECU</span>
-            </div>
-            <div class="cand-group">
-              <span class="cand-letter">F</span>
-              <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/nl.svg" alt="">NED</span>
-              <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/jp.svg" alt="">JPN</span>
-              <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/se.svg" alt="">SWE</span>
-              <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/tn.svg" alt="">TUN</span>
-            </div>
-            <div class="cand-group">
-              <span class="cand-letter">H</span>
-              <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/es.svg" alt="">ESP</span>
-              <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/cv.svg" alt="">CPV</span>
-              <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/sa.svg" alt="">KSA</span>
-              <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/uy.svg" alt="">URU</span>
-            </div>
-            <div class="cand-group">
-              <span class="cand-letter">I</span>
-              <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/fr.svg" alt="">FRA</span>
-              <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/sn.svg" alt="">SEN</span>
-              <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/iq.svg" alt="">IRQ</span>
-              <span class="team-chip"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/no.svg" alt="">NOR</span>
-            </div>
+          <p class="candidates-note">Rival exacto por definir entre los 8 mejores terceros lugares (de los 12 grupos), según la tabla oficial de combinaciones de FIFA, hasta el cierre de la fase de grupos el 27 de junio.</p>
+          <div class="thirds-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th><th>Equipo</th><th>Gpo</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GF</th><th>GC</th><th>DG</th><th>Pts</th>
+                </tr>
+              </thead>
+              <tbody id="candidatesGrid">
+                <tr class="our-rival">
+                  <td class="rank">1</td><td><span class="team-name"><img class="flag" src="https://hatscripts.github.io/circle-flags/flags/gb-sct.svg" alt="">SCO</span></td><td class="grp">C</td><td>2</td><td>1</td><td>0</td><td>1</td><td>2</td><td>3</td><td>-1</td><td class="pts">3</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <p class="candidates-note">Rival exacto por definir: será el mejor tercer lugar entre estos grupos (regla de los "8 mejores terceros"), hasta el cierre de la fase de grupos el 27 de junio.</p>
           <div class="likely-rival" id="likelyRival"></div>
         </div>
       </div>
@@ -597,6 +570,11 @@
     'Spain': 'es', 'Cape Verde': 'cv', 'Saudi Arabia': 'sa', 'Uruguay': 'uy',
     'France': 'fr', 'Senegal': 'sn', 'Iraq': 'iq', 'Norway': 'no',
     'England': 'gb-eng', 'Ghana': 'gh', 'Panama': 'pa', 'Croatia': 'hr', 'Jordan': 'jo', 'DR Congo': 'cd',
+    'Canada': 'ca', 'Bosnia & Herzegovina': 'ba', 'Qatar': 'qa', 'Switzerland': 'ch',
+    'USA': 'us', 'Paraguay': 'py', 'Australia': 'au', 'Turkey': 'tr',
+    'Belgium': 'be', 'Egypt': 'eg', 'Iran': 'ir', 'New Zealand': 'nz',
+    'Argentina': 'ar', 'Algeria': 'dz', 'Austria': 'at',
+    'Portugal': 'pt', 'Uzbekistan': 'uz', 'Colombia': 'co',
   };
 
   // ── Nombres de equipo en español ──────────────
@@ -611,6 +589,11 @@
     'France': 'Francia', 'Senegal': 'Senegal', 'Iraq': 'Irak', 'Norway': 'Noruega',
     'England': 'Inglaterra', 'Ghana': 'Ghana', 'Panama': 'Panamá', 'Croatia': 'Croacia',
     'Jordan': 'Jordania', 'DR Congo': 'RD Congo',
+    'Canada': 'Canadá', 'Bosnia & Herzegovina': 'Bosnia y Herzegovina', 'Qatar': 'Catar', 'Switzerland': 'Suiza',
+    'USA': 'Estados Unidos', 'Paraguay': 'Paraguay', 'Australia': 'Australia', 'Turkey': 'Turquía',
+    'Belgium': 'Bélgica', 'Egypt': 'Egipto', 'Iran': 'Irán', 'New Zealand': 'Nueva Zelanda',
+    'Argentina': 'Argentina', 'Algeria': 'Argelia', 'Austria': 'Austria',
+    'Portugal': 'Portugal', 'Uzbekistan': 'Uzbekistán', 'Colombia': 'Colombia',
   };
 
   function teamEs(name) {
@@ -627,6 +610,12 @@
     'Netherlands': 'NED', 'Japan': 'JPN', 'Sweden': 'SWE', 'Tunisia': 'TUN',
     'Spain': 'ESP', 'Cape Verde': 'CPV', 'Saudi Arabia': 'KSA', 'Uruguay': 'URU',
     'France': 'FRA', 'Senegal': 'SEN', 'Iraq': 'IRQ', 'Norway': 'NOR',
+    'England': 'ENG', 'Ghana': 'GHA', 'Panama': 'PAN', 'Croatia': 'CRO', 'Jordan': 'JOR', 'DR Congo': 'COD',
+    'Canada': 'CAN', 'Bosnia & Herzegovina': 'BIH', 'Qatar': 'QAT', 'Switzerland': 'SUI',
+    'USA': 'USA', 'Paraguay': 'PAR', 'Australia': 'AUS', 'Turkey': 'TUR',
+    'Belgium': 'BEL', 'Egypt': 'EGY', 'Iran': 'IRN', 'New Zealand': 'NZL',
+    'Argentina': 'ARG', 'Algeria': 'ALG', 'Austria': 'AUT',
+    'Portugal': 'POR', 'Uzbekistan': 'UZB', 'Colombia': 'COL',
   };
 
   function teamAbbr(name) {
@@ -1422,8 +1411,17 @@
         refs = new Set([MEXICO]);
       } else if (isR32) {
         rivalEl.innerHTML = `Contrincante: <span class="tbd">TBD</span>
-          <div class="candidates-inline" id="candidatesGrid"></div>
-          <p class="candidates-note">Rival exacto por definir: será el mejor tercer lugar entre estos grupos (regla de los "8 mejores terceros"), hasta el cierre de la fase de grupos.</p>
+          <p class="candidates-note">Rival exacto por definir entre los 8 mejores terceros lugares (de los 12 grupos), según la tabla oficial de combinaciones de FIFA, hasta el cierre de la fase de grupos.</p>
+          <div class="thirds-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th><th>Equipo</th><th>Gpo</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GF</th><th>GC</th><th>DG</th><th>Pts</th>
+                </tr>
+              </thead>
+              <tbody id="candidatesGrid"></tbody>
+            </table>
+          </div>
           <div class="likely-rival" id="likelyRival"></div>`;
         refs = new Set([MEXICO, 'W' + m._num]);
       } else {
@@ -1446,27 +1444,30 @@
     const groups = ['C', 'E', 'F', 'H', 'I'];
     const key = groups.join('/');
 
-    grid.innerHTML = groups.map(letter => {
-      const table = getStandings(matches, 'Group ' + letter);
-      const third = table[2];
-      return `<div class="cand-group">
-        <span class="cand-letter">${letter}</span>
-        ${table.map(t => `<span class="team-chip${t.name === (third && third.name) ? ' is-third' : ''}">${flagImg(t.name)}${teamAbbr(t.name)}</span>`).join('') || '—'}
-      </div>`;
+    const resolved = resolveBestThirds(matches, key);
+    const { thirds, winner } = resolved;
+    const top8 = thirds.slice(0, 8);
+
+    grid.innerHTML = top8.map(t => {
+      const isOurs = winner && t.letter === winner.letter;
+      const isCandidate = groups.includes(t.letter);
+      return `<tr class="${isOurs ? 'our-rival' : isCandidate ? 'is-candidate' : ''}">
+        <td class="rank">${t.globalRank}</td>
+        <td><span class="team-name">${flagImg(t.name)}${teamAbbr(t.name)}</span></td>
+        <td class="grp">${t.letter}</td>
+        <td>${t.pj}</td><td>${t.g}</td><td>${t.e}</td><td>${t.p}</td>
+        <td>${t.gf}</td><td>${t.gc}</td><td>${t.dg > 0 ? '+' + t.dg : t.dg}</td>
+        <td class="pts">${t.pts}</td>
+      </tr>`;
     }).join('');
 
     const likelyEl = document.getElementById('likelyRival');
     if (!likelyEl) return;
-    const resolved = resolveBestThirds(matches, key);
-    const winner = resolved.winner;
     if (!winner) { likelyEl.innerHTML = ''; return; }
-    const pool = resolved.thirds.filter(t => groups.includes(t.letter));
-    const rank = thirdsRankLine(pool, key, resolved, true);
     likelyEl.innerHTML = `
       Si la fase de grupos terminara hoy: <strong>${flagImg(winner.name)}${teamAbbr(winner.name)}</strong>
       (3º del Grupo ${winner.letter}, ${winner.pts} pts, DG ${winner.dg > 0 ? '+' + winner.dg : winner.dg}, GF ${winner.gf}) sería el rival,
-      según el orden de partidos de la regla de los "8 mejores terceros".
-      <div class="likely-rank">${rank}</div>`;
+      según la tabla oficial de combinaciones de los "8 mejores terceros".`;
   }
 
   async function loadLiveData() {
